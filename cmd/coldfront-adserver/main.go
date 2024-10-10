@@ -35,7 +35,6 @@ func main() {
 	if !found {
 		log.Fatal("You must set COLDFRONT_ADSERVER_API_KEY")
 	}
-	fmt.Printf("apiKey: %s, found: %t\n", apiKey, found)
 	slog.Debug("api key", "value", apiKey)
 
 	ctx := context.Background()
