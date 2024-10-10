@@ -123,7 +123,7 @@ func AddGroupToProject(ctx context.Context, projectName, groupName string) error
 }
 
 func DeleteGroupFromProject(ctx context.Context, projectName, groupName string) error {
-	slog.Info("removing user from project group", "project", projectName, "group", groupName)
+	slog.Info("removing group from project", "project", projectName, "group", groupName)
 	ex := ctx.Value(ExecutorKey).(Executor)
 	command := fmt.Sprintf("Remove-PirgGroup -Pirg %s -Name %s", projectName, groupName)
 	_, err := ex.Execute(command)
