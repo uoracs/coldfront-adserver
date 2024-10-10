@@ -17,8 +17,9 @@ func InjectContext(ctx context.Context, next http.Handler) http.Handler {
 
 func RequireAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if !ValidAPIKey(r.Context(), r) {
-			slog.Error("invalid api key")
+		if !ValidAPIKey(r) {
+			providedKey := r.Context().Value(ApiKeyKey).(string)
+			slog.Error("invalid api key", "providedKey", providedKey)
 			w.WriteHeader(http.StatusUnauthorized)
 			fmt.Fprint(w, "unauthorized")
 			return
@@ -27,8 +28,8 @@ func RequireAuth(next http.Handler) http.Handler {
 	})
 }
 
-func ValidAPIKey(ctx context.Context, r *http.Request) bool {
-	goodKey := ctx.Value(ApiKeyKey).(string)
+func ValidAPIKey(r *http.Request) bool {
+	goodKey := r.Context().Value(ApiKeyKey).(string)
 	key := r.Header.Get("X-API-KEY")
 	return key == goodKey
 }
