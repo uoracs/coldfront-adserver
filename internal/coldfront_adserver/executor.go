@@ -35,12 +35,16 @@ func (ps PowerShellExecutor) Execute(command string) (string, error) {
 	// each command includes two output lines from running the stdin commands
 	// and one output line at the end for an empty prompt
 	// lets just extract the slice between those
-	outLines := strings.Split(string(out), "\r\n")
+	outLines := strings.Split(string(out), "\n")
 
 	if len(outLines) < 3 {
 		return "", fmt.Errorf("insufficient output lines")
 	}
 	filteredLines := outLines[2 : len(outLines)-1]
+	var cleansedLines []string
+	for _,l := range filteredLines {
+		cleansedLines = append(cleansedLines, strings.TrimSpace(l))
+	}
 
 	return strings.Join(filteredLines, "\n"), nil
 }
