@@ -11,7 +11,7 @@ clean:
 	@rm -rf bin/
 
 run: build
-	@bin/($APP_NAME)
+	@bin/$(APP_NAME)
 
 test:
 	@go test ./...

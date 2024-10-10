@@ -1,38 +1,43 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
-	"os/exec"
+
+	cf "github.com/uoracs/coldfront-adserver/internal/coldfront_adserver"
 )
 
-func RunPowerShellCommand(c string) (string, error) {
-	cmd := exec.Command("powershell", "-nologo", "-noprofile")
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		return "", fmt.Errorf("failed to open powershell: %v", err)
-	}
-	go func() {
-		defer stdin.Close()
-		fmt.Fprintln(stdin, c)
-	}()
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		return "", fmt.Errorf("command failed: %v", err)
-	}
-	return string(out), nil
-}
+var version string
 
 func main() {
+	log.Printf("Starting Coldfront ADServer Version: %s", version)
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "hello world")
 	})
-	mux.HandleFunc("GET /powershell", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("POST /projects", func(w http.ResponseWriter, r *http.Request) {
+		var pr cf.CFProjectsRequest
+		err := json.NewDecoder(r.Body).Decode(&pr)
+		if err != nil {
+			slog.Error("failed to decode projects", "error", err)
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprint(w, "invalid request body")
+		}
+		for _, project := range pr.Projects {
+			err := cf.ProcessProject(project)
+			if err != nil {
+				slog.Error("failed to get process project", "error", err)
+				w.WriteHeader(http.StatusInternalServerError)
+				fmt.Fprint(w, "failed to get process project")
+			}
+		}
+	})
+	mux.HandleFunc("GET /pstest", func(w http.ResponseWriter, r *http.Request) {
 		command := "write-output 'hi there'"
-		output, err := RunPowerShellCommand(command)
+		output, err := cf.RunPowerShellCommand(command)
 		if err != nil {
 			slog.Error("error running powershell command in http endpoint", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)
@@ -41,6 +46,6 @@ func main() {
 		fmt.Fprint(w, output)
 	})
 	addr := "0.0.0.0:8080"
-	fmt.Printf("Listening on %s\n", addr)
+	log.Printf("Listening on %s\n", addr)
 	log.Fatal(http.ListenAndServe(addr, mux))
 }
