@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 
@@ -13,7 +14,7 @@ var version string
 
 func main() {
 	log.Printf("Starting Coldfront ADServer Version: %s", version)
-
+	logLevel := slog.LevelInfo
 	executor := cf.NewPowerShellExecutor()
 
 	debug := false
@@ -24,12 +25,16 @@ func main() {
 	if debug {
 		log.Println("Debug mode")
 		executor = cf.NewDebugExecutor()
+		logLevel = slog.LevelDebug
 	}
+
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})))
 
 	apiKey, found := os.LookupEnv("COLDFRONT_ADSERVER_API_KEY")
 	if !found {
 		log.Fatal("You must set COLDFRONT_ADSERVER_API_KEY")
 	}
+	slog.Debug("api key", "value", apiKey)
 
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, cf.DebugKey, debug)
