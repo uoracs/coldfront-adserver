@@ -29,16 +29,19 @@ func RequireAuth(next http.Handler) http.Handler {
 }
 
 func ValidAPIKey(r *http.Request) bool {
+	slog.Debug("validating api key")
 	goodKey := r.Context().Value(ApiKeyKey).(string)
 	key := r.Header.Get("X-API-KEY")
 	return key == goodKey
 }
 
 func GetProjectsHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("GET /projects")
 	fmt.Fprint(w, "get projects")
 }
 
 func PostProjectsHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("POST /projects")
 	var pr CFProjectsRequest
 	err := json.NewDecoder(r.Body).Decode(&pr)
 	if err != nil {
@@ -57,6 +60,7 @@ func PostProjectsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetPSTestHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("GET /pstest")
 	ex := r.Context().Value(ExecutorKey).(Executor)
 	command := "write-output 'hi there'"
 	output, err := ex.Execute(command)
@@ -69,5 +73,6 @@ func GetPSTestHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetOkHandler(w http.ResponseWriter, r *http.Request) {
+	slog.Debug("GET /")
 	fmt.Fprint(w, "ok")
 }
