@@ -5,4 +5,5 @@ type Key int
 const (
 	DebugKey Key = iota
 	ExecutorKey 
+	ApiKeyKey
 )
