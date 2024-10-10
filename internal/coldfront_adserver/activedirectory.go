@@ -101,18 +101,18 @@ func AddGroupToProject(ctx context.Context, projectName, groupName string) error
 	command := fmt.Sprintf("New-PirgGroup -Pirg %s -Name %s", projectName, groupName)
 	_, err := ex.Execute(command)
 	if err != nil {
-		return fmt.Errorf("failed to add group '%s' to project '%s': %v", groupName, username, projectName, err)
+		return fmt.Errorf("failed to add group '%s' to project '%s': %v", groupName, projectName, err)
 	}
 	return nil
 }
 
 func DeleteGroupFromProject(ctx context.Context, projectName, groupName string) error {
-	slog.Debug("removing user from project group", "project", projectName, "group", groupName, "user", username)
+	slog.Debug("removing user from project group", "project", projectName, "group", groupName)
 	ex := ctx.Value(ExecutorKey).(Executor)
-	command := fmt.Sprintf("Remove-PirgGroup -Pirg %s -Name %s", projectName, groupName, username)
+	command := fmt.Sprintf("Remove-PirgGroup -Pirg %s -Name %s", projectName, groupName)
 	_, err := ex.Execute(command)
 	if err != nil {
-		return fmt.Errorf("failed to remove group '%s' from project '%s': %v", groupName, username, projectName, err)
+		return fmt.Errorf("failed to remove group '%s' from project '%s': %v", groupName, projectName, err)
 	}
 	return nil
 }
