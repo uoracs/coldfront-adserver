@@ -21,6 +21,7 @@ func RequireAuth(next http.Handler) http.Handler {
 			slog.Error("invalid api key")
 			w.WriteHeader(http.StatusUnauthorized)
 			fmt.Fprint(w, "unauthorized")
+			return
 		}
 		next.ServeHTTP(w, r)
 	})
