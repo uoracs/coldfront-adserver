@@ -1,14 +1,13 @@
 package coldfront_adserver
 
 import (
-	"context"
 	"slices"
 )
 
-// DiffUserLists takes a two lists, a list of new users and a list of existing
-// users, and returns two lists, a list of users to add, and a list of users
+// DiffLists takes a two lists, a list of new strings and a list of existing
+// strings, and returns two lists, a list of strings to add, and a list of strings
 // to delete.
-func DiffUserLists(ctx context.Context, newUsers, existingUsers []string) ([]string, []string) {
+func DiffLists(newUsers, existingUsers []string) ([]string, []string) {
 	var addUsers []string
 	var delUsers []string
 	// only record the users that don't already exist
