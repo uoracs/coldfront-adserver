@@ -1,6 +1,7 @@
 package coldfront_adserver
 
 import (
+	"context"
 	"fmt"
 )
 
@@ -21,20 +22,20 @@ type CFProjectsRequest struct {
 	Projects []CFProject
 }
 
-func ProcessProjectUsers(project CFProject) error {
-	existingProjectUsers, err := GetCurrentProjectUsers(project.Name)
+func ProcessProjectUsers(ctx context.Context, project CFProject) error {
+	existingProjectUsers, err := GetCurrentProjectUsers(ctx, project.Name)
 	if err != nil {
 		return fmt.Errorf("failed to get current project users: %v", err)
 	}
-	addList, delList := DiffUserLists(project.Users, existingProjectUsers)
+	addList, delList := DiffUserLists(ctx, project.Users, existingProjectUsers)
 	for _, u := range delList {
-		err := DeleteUserFromProject(project.Name, u)
+		err := DeleteUserFromProject(ctx, project.Name, u)
 		if err != nil {
 			return fmt.Errorf("failed to remove user from project: %v", err)
 		}
 	}
 	for _, u := range addList {
-		err := AddUserToProject(project.Name, u)
+		err := AddUserToProject(ctx, project.Name, u)
 		if err != nil {
 			return fmt.Errorf("failed to add user to project: %v", err)
 		}
@@ -42,21 +43,21 @@ func ProcessProjectUsers(project CFProject) error {
 	return nil
 }
 
-func ProcessProjectAdmins(project CFProject) error {
+func ProcessProjectAdmins(ctx context.Context, project CFProject) error {
 	// manage the admins of the project
-	existingAdminUsers, err := GetCurrentProjectAdminUsers(project.Name)
+	existingAdminUsers, err := GetCurrentProjectAdminUsers(ctx, project.Name)
 	if err != nil {
 		return fmt.Errorf("failed to get current project admin users: %v", err)
 	}
-	addList, delList := DiffUserLists(project.Admins, existingAdminUsers)
+	addList, delList := DiffUserLists(ctx, project.Admins, existingAdminUsers)
 	for _, u := range delList {
-		err := DeleteAdminUserFromProject(project.Name, u)
+		err := DeleteAdminUserFromProject(ctx, project.Name, u)
 		if err != nil {
 			return fmt.Errorf("failed to remove admin user from project: %v", err)
 		}
 	}
 	for _, u := range addList {
-		err := AddAdminUserToProject(project.Name, u)
+		err := AddAdminUserToProject(ctx, project.Name, u)
 		if err != nil {
 			return fmt.Errorf("failed to add admin user to project: %v", err)
 		}
@@ -64,20 +65,20 @@ func ProcessProjectAdmins(project CFProject) error {
 	return nil
 }
 
-func ProcessProjectGroup(project CFProject, group CFGroup) error {
-	existingGroupUsers, err := GetCurrentProjectGroupUsers(project.Name, group.Name)
+func ProcessProjectGroup(ctx context.Context, project CFProject, group CFGroup) error {
+	existingGroupUsers, err := GetCurrentProjectGroupUsers(ctx, project.Name, group.Name)
 	if err != nil {
 		return fmt.Errorf("failed to get current project group users: %v", err)
 	}
-	addList, delList := DiffUserLists(group.Users, existingGroupUsers)
+	addList, delList := DiffUserLists(ctx, group.Users, existingGroupUsers)
 	for _, u := range delList {
-		err := DeleteGroupUserFromProject(project.Name, group.Name, u)
+		err := DeleteGroupUserFromProject(ctx, project.Name, group.Name, u)
 		if err != nil {
 			return fmt.Errorf("failed to remove group user from project: %v", err)
 		}
 	}
 	for _, u := range addList {
-		err := AddGroupUserToProject(project.Name, group.Name, u)
+		err := AddGroupUserToProject(ctx, project.Name, group.Name, u)
 		if err != nil {
 			return fmt.Errorf("failed to add group user to project: %v", err)
 		}
@@ -85,17 +86,17 @@ func ProcessProjectGroup(project CFProject, group CFGroup) error {
 	return nil
 }
 
-func ProcessProject(project CFProject) error {
-	err := ProcessProjectUsers(project)
+func ProcessProject(ctx context.Context, project CFProject) error {
+	err := ProcessProjectUsers(ctx, project)
 	if err != nil {
 		return fmt.Errorf("failed to process project users: %v", err)
 	}
-	err = ProcessProjectAdmins(project)
+	err = ProcessProjectAdmins(ctx, project)
 	if err != nil {
 		return fmt.Errorf("failed to process project admins: %v", err)
 	}
 	for _, group := range project.Groups {
-		err = ProcessProjectGroup(project, group)
+		err = ProcessProjectGroup(ctx, project, group)
 		if err != nil {
 			return fmt.Errorf("failed to process project group: %v", err)
 		}
