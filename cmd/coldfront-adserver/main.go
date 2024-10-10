@@ -43,6 +43,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET 	/", cf.GetOkHandler)
+	mux.Handle("GET		/projects", cf.InjectContext(ctx, cf.RequireAuth(http.HandlerFunc(cf.GetProjectsHandler))))
 	mux.Handle("POST	/projects", cf.InjectContext(ctx, cf.RequireAuth(http.HandlerFunc(cf.PostProjectsHandler))))
 	mux.Handle("GET 	/pstest", cf.InjectContext(ctx, cf.RequireAuth(http.HandlerFunc(cf.GetPSTestHandler))))
 

@@ -33,6 +33,10 @@ func ValidAPIKey(ctx context.Context, r *http.Request) bool {
 	return key == goodKey
 }
 
+func GetProjectsHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprint(w, "get projects")
+}
+
 func PostProjectsHandler(w http.ResponseWriter, r *http.Request) {
 	var pr CFProjectsRequest
 	err := json.NewDecoder(r.Body).Decode(&pr)
