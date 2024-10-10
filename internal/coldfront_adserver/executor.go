@@ -46,7 +46,7 @@ func (ps PowerShellExecutor) Execute(command string) (string, error) {
 		cleansedLines = append(cleansedLines, strings.TrimSpace(l))
 	}
 
-	return strings.Join(filteredLines, "\n"), nil
+	return strings.Join(cleansedLines, "\n"), nil
 }
 
 type DebugExecutor struct{}
