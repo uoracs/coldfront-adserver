@@ -7,6 +7,21 @@ import (
 	"strings"
 )
 
+func GetCurrentProjectOwner(ctx context.Context, projectName string) (string, error) {
+	slog.Debug("getting current project owner", "project", projectName)
+	ex := ctx.Value(ExecutorKey).(Executor)
+	command := fmt.Sprintf("Get-PirgPIUsername -Pirg %s", projectName)
+	output, err := ex.Execute(command)
+	if err != nil {
+		return "", fmt.Errorf("failed to get project users: %v", err)
+	}
+	names := strings.Split(output, "\n")
+	if len(names) != 1 {
+		return "", fmt.Errorf("more than one existing owner for project '%s', fix manually!", projectName)
+	}
+	return names[0], nil
+}
+
 func GetCurrentProjectUsers(ctx context.Context, projectName string) ([]string, error) {
 	slog.Debug("getting current project users", "project", projectName)
 	ex := ctx.Value(ExecutorKey).(Executor)
@@ -135,6 +150,17 @@ func DeleteGroupUserFromProject(ctx context.Context, projectName, groupName, use
 	_, err := ex.Execute(command)
 	if err != nil {
 		return fmt.Errorf("failed to remove group '%s' user '%s' from project '%s': %v", groupName, username, projectName, err)
+	}
+	return nil
+}
+
+func SetProjectOwner(ctx context.Context, projectName, username string) error {
+	slog.Debug("setting project owner", "project", projectName, "owner", username)
+	ex := ctx.Value(ExecutorKey).(Executor)
+	command := fmt.Sprintf("Set-PirgPI -Pirg %s -User %s", projectName, username)
+	_, err := ex.Execute(command)
+	if err != nil {
+		return fmt.Errorf("failed to set owner '%s' on project '%s': %v", username, projectName, err)
 	}
 	return nil
 }

@@ -109,9 +109,27 @@ func ProcessProjectGroups(ctx context.Context, project CFProject) error {
 	return nil
 }
 
+func ProcessProjectOwner(ctx context.Context, project CFProject) error {
+	existingOwner, err := GetCurrentProjectOwner(ctx, project.Name)
+	if err != nil {
+		return fmt.Errorf("failed to get current project owner: %v", err)
+	}
+	if project.Owner != existingOwner {
+		err = SetProjectOwner(ctx, project.Name, project.Owner)
+		if err != nil {
+			return fmt.Errorf("failed to set project owner: %v", err)
+		}
+	}
+	return nil
+}
+
 func ProcessProject(ctx context.Context, project CFProject) error {
 	slog.Debug("processing project", "project", project.Name)
-	err := ProcessProjectUsers(ctx, project)
+	err := ProcessProjectOwner(ctx, project)
+	if err != nil {
+		return fmt.Errorf("failed to process project owner: %v", err)
+	}
+	err = ProcessProjectUsers(ctx, project)
 	if err != nil {
 		return fmt.Errorf("failed to process project users: %v", err)
 	}
