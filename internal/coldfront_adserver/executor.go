@@ -23,6 +23,7 @@ func (ps PowerShellExecutor) Execute(command string) (string, error) {
 	}
 	go func() {
 		defer stdin.Close()
+		fmt.Fprintln(stdin, "Import-Module C:\\racs\\hpcadmin-powershell\\HPCAdmin.psm1 -force")
 		fmt.Fprintln(stdin, command)
 	}()
 	out, err := cmd.CombinedOutput()
