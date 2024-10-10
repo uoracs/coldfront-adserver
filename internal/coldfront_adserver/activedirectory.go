@@ -15,10 +15,9 @@ func GetCurrentProjectOwner(ctx context.Context, projectName string) (string, er
 	if err != nil {
 		return "", fmt.Errorf("failed to get project users: %v", err)
 	}
-	fmt.Println(output)
 	names := strings.Split(output, "\n")
 	if len(names) != 1 {
-		return "", fmt.Errorf("more than one existing owner for project '%s', fix manually!", projectName)
+		return "", fmt.Errorf("more than one existing owner for project '%s', fix manually", projectName)
 	}
 	return names[0], nil
 }
