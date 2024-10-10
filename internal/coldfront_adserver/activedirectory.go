@@ -67,7 +67,7 @@ func GetCurrentProjectGroupUsers(ctx context.Context, projectName, groupName str
 }
 
 func AddUserToProject(ctx context.Context, projectName, username string) error {
-	slog.Debug("adding user to project", "project", projectName, "user", username)
+	slog.Info("adding user to project", "project", projectName, "user", username)
 	ex := ctx.Value(ExecutorKey).(Executor)
 	command := fmt.Sprintf("Add-PirgUser -Pirg %s -User %s", projectName, username)
 	_, err := ex.Execute(command)
@@ -78,7 +78,7 @@ func AddUserToProject(ctx context.Context, projectName, username string) error {
 }
 
 func DeleteUserFromProject(ctx context.Context, projectName, username string) error {
-	slog.Debug("removing user from project", "project", projectName, "user", username)
+	slog.Info("removing user from project", "project", projectName, "user", username)
 	ex := ctx.Value(ExecutorKey).(Executor)
 	command := fmt.Sprintf("Remove-PirgUser -Pirg %s -User %s", projectName, username)
 	_, err := ex.Execute(command)
@@ -89,7 +89,7 @@ func DeleteUserFromProject(ctx context.Context, projectName, username string) er
 }
 
 func AddAdminUserToProject(ctx context.Context, projectName, username string) error {
-	slog.Debug("adding admin user to project", "project", projectName, "user", username)
+	slog.Info("adding admin user to project", "project", projectName, "user", username)
 	ex := ctx.Value(ExecutorKey).(Executor)
 	command := fmt.Sprintf("Add-PirgAdmin -Pirg %s -User %s", projectName, username)
 	_, err := ex.Execute(command)
@@ -100,7 +100,7 @@ func AddAdminUserToProject(ctx context.Context, projectName, username string) er
 }
 
 func DeleteAdminUserFromProject(ctx context.Context, projectName, username string) error {
-	slog.Debug("removing admin user from project", "project", projectName, "user", username)
+	slog.Info("removing admin user from project", "project", projectName, "user", username)
 	ex := ctx.Value(ExecutorKey).(Executor)
 	command := fmt.Sprintf("Remove-PirgAdmin -Pirg %s -User %s", projectName, username)
 	_, err := ex.Execute(command)
@@ -111,7 +111,7 @@ func DeleteAdminUserFromProject(ctx context.Context, projectName, username strin
 }
 
 func AddGroupToProject(ctx context.Context, projectName, groupName string) error {
-	slog.Debug("adding group to project", "project", projectName, "group", groupName)
+	slog.Info("adding group to project", "project", projectName, "group", groupName)
 	ex := ctx.Value(ExecutorKey).(Executor)
 	command := fmt.Sprintf("New-PirgGroup -Pirg %s -Name %s", projectName, groupName)
 	_, err := ex.Execute(command)
@@ -122,7 +122,7 @@ func AddGroupToProject(ctx context.Context, projectName, groupName string) error
 }
 
 func DeleteGroupFromProject(ctx context.Context, projectName, groupName string) error {
-	slog.Debug("removing user from project group", "project", projectName, "group", groupName)
+	slog.Info("removing user from project group", "project", projectName, "group", groupName)
 	ex := ctx.Value(ExecutorKey).(Executor)
 	command := fmt.Sprintf("Remove-PirgGroup -Pirg %s -Name %s", projectName, groupName)
 	_, err := ex.Execute(command)
@@ -133,7 +133,7 @@ func DeleteGroupFromProject(ctx context.Context, projectName, groupName string) 
 }
 
 func AddGroupUserToProject(ctx context.Context, projectName, groupName, username string) error {
-	slog.Debug("adding user to project group", "project", projectName, "group", groupName, "user", username)
+	slog.Info("adding user to project group", "project", projectName, "group", groupName, "user", username)
 	ex := ctx.Value(ExecutorKey).(Executor)
 	command := fmt.Sprintf("Add-PirgGroupUser -Pirg %s -Group %s -User %s", projectName, groupName, username)
 	_, err := ex.Execute(command)
@@ -144,7 +144,7 @@ func AddGroupUserToProject(ctx context.Context, projectName, groupName, username
 }
 
 func DeleteGroupUserFromProject(ctx context.Context, projectName, groupName, username string) error {
-	slog.Debug("removing user from project group", "project", projectName, "group", groupName, "user", username)
+	slog.Info("removing user from project group", "project", projectName, "group", groupName, "user", username)
 	ex := ctx.Value(ExecutorKey).(Executor)
 	command := fmt.Sprintf("Remove-PirgGroupUser -Pirg %s -Group %s -User %s", projectName, groupName, username)
 	_, err := ex.Execute(command)
@@ -155,7 +155,7 @@ func DeleteGroupUserFromProject(ctx context.Context, projectName, groupName, use
 }
 
 func SetProjectOwner(ctx context.Context, projectName, username string) error {
-	slog.Debug("setting project owner", "project", projectName, "owner", username)
+	slog.Info("setting project owner", "project", projectName, "owner", username)
 	ex := ctx.Value(ExecutorKey).(Executor)
 	command := fmt.Sprintf("Set-PirgPI -Pirg %s -User %s", projectName, username)
 	_, err := ex.Execute(command)

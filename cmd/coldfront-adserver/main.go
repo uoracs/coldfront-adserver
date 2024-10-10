@@ -17,15 +17,14 @@ func main() {
 	logLevel := slog.LevelInfo
 	executor := cf.NewPowerShellExecutor()
 
-	debug := false
-	_, found := os.LookupEnv("DEBUG")
-	if found {
-		debug = true
-	}
+	debugLevel, debug := os.LookupEnv("DEBUG_LEVEL")
 	if debug {
 		log.Println("Debug mode")
-		executor = cf.NewDebugExecutor()
 		logLevel = slog.LevelDebug
+
+		if debugLevel == "2" {
+			executor = cf.NewDebugExecutor()
+		}
 	}
 
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: logLevel})))
