@@ -30,10 +30,6 @@ func RequireAuth(next http.Handler) http.Handler {
 	})
 }
 
-func ValidAPIKey(r *http.Request) bool {
-	slog.Debug("validating api key")
-}
-
 func GetProjectsHandler(w http.ResponseWriter, r *http.Request) {
 	slog.Debug("GET /projects")
 	fmt.Fprint(w, "get projects")
