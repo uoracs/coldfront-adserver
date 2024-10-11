@@ -40,3 +40,8 @@ func CleanList(text string) []string {
 	}
 	return out
 }
+
+func DeWindows(text string) string {
+	return strings.ReplaceAll(text, "\r\n", "\n")
+
+}

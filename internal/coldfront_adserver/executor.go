@@ -51,23 +51,24 @@ func (ps PowerShellExecutor) Execute(command string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to read bytes from stdout: %v", err)
 	}
+	stdout := DeWindows(string(stdoutBytes))
 	stderrBytes, err := io.ReadAll(stderrPipe)
 	if err != nil {
 		return "", fmt.Errorf("failed to read bytes from stderr: %v", err)
 	}
+	stderr := DeWindows(string(stderrBytes))
 
 	err = cmd.Wait()
 	if err != nil {
-		return "", fmt.Errorf("command failed: %s. error: %v", string(stderrBytes), err)
+		return "", fmt.Errorf("command failed: %s. error: %v", stderr, err)
 	}
 
-	out := string(stdoutBytes)
-	slog.Debug("command executor", "stdout", out)
+	slog.Debug("command executor", "stdout", stdout)
 
 	// each command includes two output lines from running the stdin commands
 	// and one output line at the end for an empty prompt
 	// lets just extract the slice between those
-	outLines := strings.Split(string(out), "\n")
+	outLines := strings.Split(stdout, "\n")
 
 	if len(outLines) < 3 {
 		return "", fmt.Errorf("insufficient output lines")
