@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"strings"
 )
 
 func GetCurrentProjectOwner(ctx context.Context, projectName string) (string, error) {
@@ -15,7 +14,7 @@ func GetCurrentProjectOwner(ctx context.Context, projectName string) (string, er
 	if err != nil {
 		return "", fmt.Errorf("failed to get project users: %v", err)
 	}
-	names := strings.Split(output, "\n")
+	names := CleanList(output)
 	if len(names) != 1 {
 		return "", fmt.Errorf("more than one existing owner for project '%s', fix manually", projectName)
 	}
@@ -30,7 +29,8 @@ func GetCurrentProjectUsers(ctx context.Context, projectName string) ([]string, 
 	if err != nil {
 		return nil, fmt.Errorf("failed to get project users: %v", err)
 	}
-	return strings.Split(output, "\n"), nil
+	outlines := CleanList(output)
+	return outlines, nil
 }
 
 func GetCurrentProjectAdminUsers(ctx context.Context, projectName string) ([]string, error) {
@@ -41,7 +41,8 @@ func GetCurrentProjectAdminUsers(ctx context.Context, projectName string) ([]str
 	if err != nil {
 		return nil, fmt.Errorf("failed to get project admin users: %v", err)
 	}
-	return strings.Split(output, "\n"), nil
+	outlines := CleanList(output)
+	return outlines, nil
 }
 
 func GetCurrentProjectGroupNames(ctx context.Context, projectName string) ([]string, error) {
@@ -52,7 +53,8 @@ func GetCurrentProjectGroupNames(ctx context.Context, projectName string) ([]str
 	if err != nil {
 		return nil, fmt.Errorf("failed to get project groups: %v", err)
 	}
-	return strings.Split(output, "\n"), nil
+	outlines := CleanList(output)
+	return outlines, nil
 }
 
 func GetCurrentProjectGroupUsers(ctx context.Context, projectName, groupName string) ([]string, error) {
@@ -63,7 +65,8 @@ func GetCurrentProjectGroupUsers(ctx context.Context, projectName, groupName str
 	if err != nil {
 		return nil, fmt.Errorf("failed to get project group users: %v", err)
 	}
-	return strings.Split(output, "\n"), nil
+	outlines := CleanList(output)
+	return outlines, nil
 }
 
 func AddUserToProject(ctx context.Context, projectName, username string) error {

@@ -2,6 +2,7 @@ package coldfront_adserver
 
 import (
 	"slices"
+	"strings"
 )
 
 // DiffLists takes a two lists, a list of new strings and a list of existing
@@ -24,4 +25,18 @@ func DiffLists(newUsers, existingUsers []string) ([]string, []string) {
 		}
 	}
 	return addUsers, delUsers
+}
+
+// CleanList takes a block of text and returns all non-empty lines
+// with all the leading/trailing spaces cleaned
+func CleanList(text string) []string {
+	var out []string
+	lines := strings.Split(text, "\n")
+	for _, line := range lines {
+		l := strings.TrimSpace(line)
+		if l != "" {
+			out = append(out, l)
+		}
+	}
+	return out
 }
