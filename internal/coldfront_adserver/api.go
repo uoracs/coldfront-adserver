@@ -52,9 +52,9 @@ func PostProjectsHandler(w http.ResponseWriter, r *http.Request) {
 	for _, project := range pr.Projects {
 		err := ProcessProject(r.Context(), project)
 		if err != nil {
-			slog.Error("failed to get process project", "error", err)
+			slog.Error("failed to process project", "error", err)
 			w.WriteHeader(http.StatusInternalServerError)
-			fmt.Fprint(w, "failed to get process project")
+			fmt.Fprint(w, "failed to process project")
 		}
 	}
 }
