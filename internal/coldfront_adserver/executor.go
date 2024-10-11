@@ -2,6 +2,7 @@ package coldfront_adserver
 
 import (
 	"fmt"
+	"io"
 	"log/slog"
 	"os/exec"
 	"strings"
@@ -25,11 +26,11 @@ func (ps PowerShellExecutor) Execute(command string) (string, error) {
 		return "", fmt.Errorf("failed to connect to stdin: %v", err)
 	}
 
-	stderr, err := cmd.StderrPipe()
+	stderrPipe, err := cmd.StderrPipe()
 	if err != nil {
 		return "", fmt.Errorf("failed to connect to stderr: %v", err)
 	}
-	defer stderr.Close()
+	defer stderrPipe.Close()
 
 	go func() {
 		defer stdin.Close()
@@ -39,7 +40,12 @@ func (ps PowerShellExecutor) Execute(command string) (string, error) {
 
 	out, err := cmd.Output()
 	if err != nil {
-		return "", fmt.Errorf("command failed: %s. error: %v", stderr, err)
+		// command exit code 1
+		stderrBytes, err := io.ReadAll(stderrPipe)
+		if err != nil {
+			return "", fmt.Errorf("failed to read bytes from stderr: %v", err)
+		}
+		return "", fmt.Errorf("command failed: %s. error: %v", string(stderrBytes), err)
 	}
 
 	slog.Debug("command executor", "stdout", out)
