@@ -21,6 +21,11 @@ func NewPowerShellExecutor() Executor {
 func (ps PowerShellExecutor) Execute(command string) (string, error) {
 	cmd := exec.Command("powershell", "-nologo", "-noprofile")
 
+	stdoutPipe, err := cmd.StdoutPipe()
+	if err != nil {
+		return "", fmt.Errorf("failed to connect to stdout: %v", err)
+	}
+
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return "", fmt.Errorf("failed to connect to stdin: %v", err)
@@ -30,7 +35,6 @@ func (ps PowerShellExecutor) Execute(command string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("failed to connect to stderr: %v", err)
 	}
-	defer stderrPipe.Close()
 
 	go func() {
 		defer stdin.Close()
@@ -38,16 +42,26 @@ func (ps PowerShellExecutor) Execute(command string) (string, error) {
 		fmt.Fprintln(stdin, command)
 	}()
 
-	out, err := cmd.Output()
+	err = cmd.Start()
 	if err != nil {
-		// command exit code 1
-		stderrBytes, err := io.ReadAll(stderrPipe)
-		if err != nil {
-			return "", fmt.Errorf("failed to read bytes from stderr: %v", err)
-		}
+		return "", fmt.Errorf("failed to start command: %v", err)
+	}
+
+	stdoutBytes, err := io.ReadAll(stdoutPipe)
+	if err != nil {
+		return "", fmt.Errorf("failed to read bytes from stdout: %v", err)
+	}
+	stderrBytes, err := io.ReadAll(stderrPipe)
+	if err != nil {
+		return "", fmt.Errorf("failed to read bytes from stderr: %v", err)
+	}
+
+	err = cmd.Wait()
+	if err != nil {
 		return "", fmt.Errorf("command failed: %s. error: %v", string(stderrBytes), err)
 	}
 
+	out := string(stdoutBytes)
 	slog.Debug("command executor", "stdout", out)
 
 	// each command includes two output lines from running the stdin commands
