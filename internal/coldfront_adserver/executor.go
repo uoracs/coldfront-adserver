@@ -36,12 +36,9 @@ func (ps PowerShellExecutor) Execute(command string) (string, error) {
 		return "", fmt.Errorf("failed to connect to stderr: %v", err)
 	}
 
-	// go func() {
-		// defer stdin.Close()
-		fmt.Fprintln(stdin, "Import-Module C:\\racs\\hpcadmin-powershell\\HPCAdmin.psm1 -force")
-		fmt.Fprintln(stdin, command)
-		stdin.Close()
-	// }()
+	fmt.Fprintln(stdin, "Import-Module C:\\racs\\hpcadmin-powershell\\HPCAdmin.psm1 -force")
+	fmt.Fprintln(stdin, command)
+	stdin.Close()
 
 	err = cmd.Start()
 	if err != nil {
