@@ -57,6 +57,9 @@ func (ps PowerShellExecutor) Execute(command string) (string, error) {
 		return "", fmt.Errorf("failed to read bytes from stderr: %v", err)
 	}
 	stderr := DeWindows(string(stderrBytes))
+	// all our errors from hpcadmin-powershell are single lines, so lets just
+	// grab the first line of stdout
+	stderr = strings.Split(stderr, "\n")[0]
 
 	err = cmd.Wait()
 	if err != nil {
